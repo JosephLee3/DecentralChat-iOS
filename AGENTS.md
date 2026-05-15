@@ -62,11 +62,39 @@ Required test style:
 - No real Keychain in unit tests
 - No real SwiftData in unit tests
 
-## Test Command
+## Verification Policy
 
-Run:
+This MacBook Air is slow when running iOS Simulator.
+
+Default rules:
+- Do not run `xcodebuild test` by default.
+- Do not launch iOS Simulator by default.
+- Do not run UI tests by default.
+- For normal coding tasks, only run build verification.
+- Do not use broad `pkill` commands.
+- If a process must be killed, kill only the exact stuck `xcodebuild` PID.
+
+Preferred build verification command:
 
 ```bash
-xcodebuild test \
+xcodebuild -project DecentralChat.xcodeproj \
   -scheme DecentralChat \
-  -destination 'platform=iOS Simulator,name=iPhone 15'
+  -destination 'generic/platform=iOS' \
+  build
+```
+
+If generic iOS build fails only because of signing or provisioning, use:
+
+```bash
+xcodebuild -project DecentralChat.xcodeproj \
+  -scheme DecentralChat \
+  -destination 'generic/platform=iOS Simulator' \
+  build-for-testing
+```
+
+Final reports must include:
+- Files modified
+- Build command used
+- Build result
+- Whether Simulator was launched
+- Known limitations

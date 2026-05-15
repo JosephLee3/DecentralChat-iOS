@@ -1,0 +1,11 @@
+/Users/josephlee/dev/XcodeProjects/DecentralChat/DecentralChatCore/Sources/DecentralChatCore/Domain/ChatMessage.swift
+/Users/josephlee/dev/XcodeProjects/DecentralChat/DecentralChatCore/Sources/DecentralChatCore/Domain/Contact.swift
+/Users/josephlee/dev/XcodeProjects/DecentralChat/DecentralChatCore/Sources/DecentralChatCore/Domain/Conversation.swift
+/Users/josephlee/dev/XcodeProjects/DecentralChat/DecentralChatCore/Sources/DecentralChatCore/Domain/ConversationIDFactory.swift
+/Users/josephlee/dev/XcodeProjects/DecentralChat/DecentralChatCore/Sources/DecentralChatCore/Domain/MessageDirection.swift
+/Users/josephlee/dev/XcodeProjects/DecentralChat/DecentralChatCore/Sources/DecentralChatCore/Domain/MessageEnvelope.swift
+/Users/josephlee/dev/XcodeProjects/DecentralChat/DecentralChatCore/Sources/DecentralChatCore/Domain/MessageEnvelopeType.swift
+/Users/josephlee/dev/XcodeProjects/DecentralChat/DecentralChatCore/Sources/DecentralChatCore/Domain/MessageStatus.swift
+/Users/josephlee/dev/XcodeProjects/DecentralChat/DecentralChatCore/Sources/DecentralChatCore/Domain/Relay.swift
+/Users/josephlee/dev/XcodeProjects/DecentralChat/DecentralChatCore/Sources/DecentralChatCore/Domain/TransportState.swift
+/Users/josephlee/dev/XcodeProjects/DecentralChat/DecentralChatCore/Sources/DecentralChatCore/Domain/UserIdentity.swift

@@ -1,0 +1,12 @@
+{
+  "": {
+    "swift-dependencies": "/Users/josephlee/dev/XcodeProjects/DecentralChat/DecentralChatCore/.build/x86_64-apple-macosx/debug/DecentralChatCorePackageTests.build/master.swiftdeps"
+  },
+  "/Users/josephlee/dev/XcodeProjects/DecentralChat/DecentralChatCore/.build/x86_64-apple-macosx/debug/DecentralChatCorePackageTests.derived/runner.swift": {
+    "dependencies": "/Users/josephlee/dev/XcodeProjects/DecentralChat/DecentralChatCore/.build/x86_64-apple-macosx/debug/DecentralChatCorePackageTests.build/runner.d",
+    "object": "/Users/josephlee/dev/XcodeProjects/DecentralChat/DecentralChatCore/.build/x86_64-apple-macosx/debug/DecentralChatCorePackageTests.build/runner.swift.o",
+    "swiftmodule": "/Users/josephlee/dev/XcodeProjects/DecentralChat/DecentralChatCore/.build/x86_64-apple-macosx/debug/DecentralChatCorePackageTests.build/runner~partial.swiftmodule",
+    "swift-dependencies": "/Users/josephlee/dev/XcodeProjects/DecentralChat/DecentralChatCore/.build/x86_64-apple-macosx/debug/DecentralChatCorePackageTests.build/runner.swiftdeps",
+    "diagnostics": "/Users/josephlee/dev/XcodeProjects/DecentralChat/DecentralChatCore/.build/x86_64-apple-macosx/debug/DecentralChatCorePackageTests.build/runner.dia"
+  }
+}

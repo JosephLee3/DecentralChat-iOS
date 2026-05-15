@@ -1,0 +1,19 @@
+{
+  "": {
+    "swift-dependencies": "/Users/josephlee/dev/XcodeProjects/DecentralChat/DecentralChatCore/.build/x86_64-apple-macosx/debug/DecentralChatCoreTests.build/master.swiftdeps"
+  },
+  "/Users/josephlee/dev/XcodeProjects/DecentralChat/DecentralChatCore/Tests/DecentralChatCoreTests/ConversationIDFactoryTests.swift": {
+    "dependencies": "/Users/josephlee/dev/XcodeProjects/DecentralChat/DecentralChatCore/.build/x86_64-apple-macosx/debug/DecentralChatCoreTests.build/ConversationIDFactoryTests.d",
+    "object": "/Users/josephlee/dev/XcodeProjects/DecentralChat/DecentralChatCore/.build/x86_64-apple-macosx/debug/DecentralChatCoreTests.build/ConversationIDFactoryTests.swift.o",
+    "swiftmodule": "/Users/josephlee/dev/XcodeProjects/DecentralChat/DecentralChatCore/.build/x86_64-apple-macosx/debug/DecentralChatCoreTests.build/ConversationIDFactoryTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/josephlee/dev/XcodeProjects/DecentralChat/DecentralChatCore/.build/x86_64-apple-macosx/debug/DecentralChatCoreTests.build/ConversationIDFactoryTests.swiftdeps",
+    "diagnostics": "/Users/josephlee/dev/XcodeProjects/DecentralChat/DecentralChatCore/.build/x86_64-apple-macosx/debug/DecentralChatCoreTests.build/ConversationIDFactoryTests.dia"
+  },
+  "/Users/josephlee/dev/XcodeProjects/DecentralChat/DecentralChatCore/Tests/DecentralChatCoreTests/MessageEnvelopeTests.swift": {
+    "dependencies": "/Users/josephlee/dev/XcodeProjects/DecentralChat/DecentralChatCore/.build/x86_64-apple-macosx/debug/DecentralChatCoreTests.build/MessageEnvelopeTests.d",
+    "object": "/Users/josephlee/dev/XcodeProjects/DecentralChat/DecentralChatCore/.build/x86_64-apple-macosx/debug/DecentralChatCoreTests.build/MessageEnvelopeTests.swift.o",
+    "swiftmodule": "/Users/josephlee/dev/XcodeProjects/DecentralChat/DecentralChatCore/.build/x86_64-apple-macosx/debug/DecentralChatCoreTests.build/MessageEnvelopeTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/josephlee/dev/XcodeProjects/DecentralChat/DecentralChatCore/.build/x86_64-apple-macosx/debug/DecentralChatCoreTests.build/MessageEnvelopeTests.swiftdeps",
+    "diagnostics": "/Users/josephlee/dev/XcodeProjects/DecentralChat/DecentralChatCore/.build/x86_64-apple-macosx/debug/DecentralChatCoreTests.build/MessageEnvelopeTests.dia"
+  }
+}
