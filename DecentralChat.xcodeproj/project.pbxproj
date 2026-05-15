@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		9A30D8402FB74F1E002FDF3A /* AGENTS.md in Sources */ = {isa = PBXBuildFile; fileRef = 9A30D83F2FB74F10002FDF3A /* AGENTS.md */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		9A30D8232FB74DE5002FDF3A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -27,6 +31,7 @@
 		9A30D8152FB74DE0002FDF3A /* DecentralChat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DecentralChat.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9A30D8222FB74DE5002FDF3A /* DecentralChatTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DecentralChatTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9A30D82C2FB74DE5002FDF3A /* DecentralChatUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DecentralChatUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		9A30D83F2FB74F10002FDF3A /* AGENTS.md */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AGENTS.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -75,6 +80,7 @@
 		9A30D80C2FB74DE0002FDF3A = {
 			isa = PBXGroup;
 			children = (
+				9A30D83F2FB74F10002FDF3A /* AGENTS.md */,
 				9A30D8172FB74DE0002FDF3A /* DecentralChat */,
 				9A30D8252FB74DE5002FDF3A /* DecentralChatTests */,
 				9A30D82F2FB74DE5002FDF3A /* DecentralChatUITests */,
@@ -236,6 +242,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9A30D8402FB74F1E002FDF3A /* AGENTS.md in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
