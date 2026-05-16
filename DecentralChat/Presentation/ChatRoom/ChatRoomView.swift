@@ -2,64 +2,58 @@ import DecentralChatCore
 import SwiftUI
 
 struct ChatRoomView: View {
+    private let contact: Contact
     @StateObject private var viewModel: ChatRoomViewModel
 
-    init() {
-        let contact = Contact(
-            id: "demo-contact-public-key",
-            displayName: "Demo Contact",
-            publicKey: "demo-contact-public-key",
-            createdAt: Date()
-        )
+    init(contact: Contact) {
+        self.contact = contact
         _viewModel = StateObject(wrappedValue: ChatRoomViewModel(contact: contact))
     }
 
     var body: some View {
-        NavigationStack {
-            VStack(spacing: 12) {
-                ScrollViewReader { proxy in
-                    ScrollView {
-                        LazyVStack(spacing: 8) {
-                            ForEach(viewModel.messages) { message in
-                                messageRow(message)
-                                    .id(message.id)
-                            }
-                        }
-                        .padding(.vertical, 4)
-                    }
-                    .scrollDismissesKeyboard(.interactively)
-                    .onChange(of: viewModel.messages.map(\.id)) { _, messageIDs in
-                        scrollToLatestMessage(messageIDs, proxy: proxy)
-                    }
-                    .task {
-                        await viewModel.reloadMessages()
-                        scrollToLatestMessage(viewModel.messages.map(\.id), proxy: proxy)
-                    }
-                }
-
-                if let errorMessage = viewModel.errorMessage {
-                    Text(errorMessage)
-                        .font(.caption)
-                        .foregroundStyle(.red)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                }
-
-                HStack {
-                    TextField("Message", text: $viewModel.inputText)
-                        .textFieldStyle(.roundedBorder)
-
-                    Button("Send") {
-                        Task {
-                            await viewModel.send()
+        VStack(spacing: 12) {
+            ScrollViewReader { proxy in
+                ScrollView {
+                    LazyVStack(spacing: 8) {
+                        ForEach(viewModel.messages) { message in
+                            messageRow(message)
+                                .id(message.id)
                         }
                     }
-                    .buttonStyle(.borderedProminent)
-                    .disabled(isInputEmpty)
+                    .padding(.vertical, 4)
+                }
+                .scrollDismissesKeyboard(.interactively)
+                .onChange(of: viewModel.messages.map(\.id)) { _, messageIDs in
+                    scrollToLatestMessage(messageIDs, proxy: proxy)
+                }
+                .task {
+                    await viewModel.reloadMessages()
+                    scrollToLatestMessage(viewModel.messages.map(\.id), proxy: proxy)
                 }
             }
-            .padding()
-            .navigationTitle("Demo Chat")
+
+            if let errorMessage = viewModel.errorMessage {
+                Text(errorMessage)
+                    .font(.caption)
+                    .foregroundStyle(.red)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+
+            HStack {
+                TextField("Message", text: $viewModel.inputText)
+                    .textFieldStyle(.roundedBorder)
+
+                Button("Send") {
+                    Task {
+                        await viewModel.send()
+                    }
+                }
+                .buttonStyle(.borderedProminent)
+                .disabled(isInputEmpty)
+            }
         }
+        .padding()
+        .navigationTitle(contact.displayName)
     }
 
     private var isInputEmpty: Bool {
@@ -107,7 +101,16 @@ struct ChatRoomView: View {
 }
 
 #Preview {
-    ChatRoomView()
+    NavigationStack {
+        ChatRoomView(
+            contact: Contact(
+                id: "demo-contact-public-key",
+                displayName: "Demo Contact",
+                publicKey: "demo-contact-public-key",
+                createdAt: Date()
+            )
+        )
+    }
 }
 
 private extension ChatMessage {
