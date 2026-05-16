@@ -7,6 +7,7 @@
 
 public enum MessageStatus: String, Codable, Equatable {
     case pending
+    case sending
     case sent
     case delivered
     case failed

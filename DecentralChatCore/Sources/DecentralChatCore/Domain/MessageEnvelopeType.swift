@@ -6,6 +6,7 @@
 //
 
 public enum MessageEnvelopeType: String, Codable, Equatable {
+    case text
     case chatMessage
     case acknowledgement
     case typing

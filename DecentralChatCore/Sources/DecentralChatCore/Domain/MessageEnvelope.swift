@@ -17,7 +17,7 @@ public struct MessageEnvelope: Codable, Equatable, Identifiable {
     public let ciphertext: String
     public let createdAt: Date
     public let expiresAt: Date?
-    public let nonce: String
+    public let nonce: String?
     public let signature: String
 
     public init(
@@ -30,7 +30,7 @@ public struct MessageEnvelope: Codable, Equatable, Identifiable {
         ciphertext: String,
         createdAt: Date,
         expiresAt: Date?,
-        nonce: String,
+        nonce: String?,
         signature: String
     ) {
         self.id = id

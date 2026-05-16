@@ -21,6 +21,35 @@ The goal is to build a decentralized chat app foundation using:
 - Real WebSocket later
 - Real cryptography later
 
+## Architecture V2
+
+The project uses a local Swift Package named `DecentralChatCore` as the core
+logic module.
+
+`DecentralChatCore` owns:
+- Domain Models
+- Protocols
+- Repositories
+- InMemory Stores
+- Mocks
+- Core Tests
+
+The iOS app owns:
+- SwiftUI Views
+- ViewModels
+- AppContainer
+- Keychain
+- SwiftData
+- WebSocket
+
+`DecentralChatCore` must not import:
+- SwiftUI
+- UIKit
+- SwiftData
+- CryptoKit
+- Network
+- WebSocket
+
 ## Architecture Rules
 
 - Views must only render UI.
@@ -62,6 +91,13 @@ Required test style:
 - No real Keychain in unit tests
 - No real SwiftData in unit tests
 
+Core tasks must use:
+
+```bash
+cd DecentralChatCore
+swift test
+```
+
 ## Verification Policy
 
 This MacBook Air is slow when running iOS Simulator.
@@ -71,6 +107,7 @@ Default rules:
 - Do not launch iOS Simulator by default.
 - Do not run UI tests by default.
 - For normal coding tasks, only run build verification.
+- For `DecentralChatCore` tasks, run `cd DecentralChatCore && swift test`.
 - Do not use broad `pkill` commands.
 - If a process must be killed, kill only the exact stuck `xcodebuild` PID.
 

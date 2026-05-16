@@ -6,6 +6,7 @@
 //
 
 public enum TransportState: String, Codable, Equatable {
+    case idle
     case disconnected
     case connecting
     case connected

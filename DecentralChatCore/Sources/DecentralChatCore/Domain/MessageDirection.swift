@@ -6,6 +6,8 @@
 //
 
 public enum MessageDirection: String, Codable, Equatable {
+    case incoming
     case inbound
+    case outgoing
     case outbound
 }

@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		9A30D8412FB85100002FDF3A /* DecentralChatCore in Frameworks */ = {isa = PBXBuildFile; productRef = 9A30D8402FB85100002FDF3A /* DecentralChatCore */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		9A30D8232FB74DE5002FDF3A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -53,6 +57,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9A30D8412FB85100002FDF3A /* DecentralChatCore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -114,6 +119,7 @@
 			);
 			name = DecentralChat;
 			packageProductDependencies = (
+				9A30D8402FB85100002FDF3A /* DecentralChatCore */,
 			);
 			productName = DecentralChat;
 			productReference = 9A30D8152FB74DE0002FDF3A /* DecentralChat.app */;
@@ -197,6 +203,9 @@
 			);
 			mainGroup = 9A30D80C2FB74DE0002FDF3A;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				9A30D83F2FB85100002FDF3A /* XCLocalSwiftPackageReference "DecentralChatCore" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 9A30D8162FB74DE0002FDF3A /* Products */;
 			projectDirPath = "";
@@ -582,6 +591,21 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		9A30D83F2FB85100002FDF3A /* XCLocalSwiftPackageReference "DecentralChatCore" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = DecentralChatCore;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		9A30D8402FB85100002FDF3A /* DecentralChatCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9A30D83F2FB85100002FDF3A /* XCLocalSwiftPackageReference "DecentralChatCore" */;
+			productName = DecentralChatCore;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 9A30D80D2FB74DE0002FDF3A /* Project object */;
 }
