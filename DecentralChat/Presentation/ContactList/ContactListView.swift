@@ -11,14 +11,14 @@ struct ContactListView: View {
                     loadingRow
                 }
 
-                if viewModel.contacts.isEmpty && !viewModel.isLoading {
+                if viewModel.chatItems.isEmpty && !viewModel.isLoading {
                     emptyStateRow
                 } else {
-                    ForEach(viewModel.contacts) { contact in
+                    ForEach(viewModel.chatItems) { item in
                         NavigationLink {
-                            ChatRoomView(contact: contact)
+                            ChatRoomView(contact: item.contact)
                         } label: {
-                            contactRow(contact)
+                            contactRow(item)
                         }
                     }
                 }
@@ -27,6 +27,11 @@ struct ContactListView: View {
             .navigationTitle("Chats")
             .task {
                 await viewModel.loadContacts()
+            }
+            .onAppear {
+                Task {
+                    await viewModel.loadContacts()
+                }
             }
             .overlay {
                 if let errorMessage = viewModel.errorMessage {
@@ -60,44 +65,53 @@ struct ContactListView: View {
         .padding(.vertical, 12)
     }
 
-    private func contactRow(_ contact: Contact) -> some View {
+    private func contactRow(_ item: ChatListItemViewModel) -> some View {
         HStack(spacing: 12) {
-            avatar(for: contact)
+            avatar(title: item.title)
 
-            VStack(alignment: .leading, spacing: 4) {
-                HStack {
-                    Text(contact.displayName)
+            VStack(spacing: 4) {
+                HStack(alignment: .firstTextBaseline) {
+                    Text(item.title)
                         .font(.headline)
                         .foregroundStyle(.primary)
                         .lineLimit(1)
 
                     Spacer()
 
-                    Text("Now")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                    if !item.timeText.isEmpty {
+                        Text(item.timeText)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
                 }
 
-                Text(shortPublicKey(contact.publicKey))
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(1)
+                HStack(alignment: .firstTextBaseline, spacing: 8) {
+                    Text(item.subtitle)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
 
-                Text("Tap to chat")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                    Spacer()
+
+                    if let statusText = item.statusText {
+                        Text(statusText)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .lineLimit(1)
+                    }
+                }
             }
         }
         .padding(.vertical, 6)
     }
 
-    private func avatar(for contact: Contact) -> some View {
+    private func avatar(title: String) -> some View {
         ZStack {
             Circle()
                 .fill(Color.accentColor.opacity(0.18))
                 .frame(width: 44, height: 44)
 
-            Text(firstLetter(of: contact.displayName))
+            Text(firstLetter(of: title))
                 .font(.headline)
                 .foregroundStyle(Color.accentColor)
         }
@@ -110,9 +124,6 @@ struct ContactListView: View {
             .uppercased()
     }
 
-    private func shortPublicKey(_ publicKey: String) -> String {
-        "\(publicKey.prefix(8))..."
-    }
 }
 
 #Preview {
