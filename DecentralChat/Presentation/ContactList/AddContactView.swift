@@ -7,17 +7,37 @@ struct AddContactView: View {
     var body: some View {
         NavigationStack {
             Form {
-                TextField("Display Name", text: $viewModel.displayName)
-                    .textInputAutocapitalization(.words)
+                Section {
+                    TextField("Display Name", text: $viewModel.displayName)
+                        .textInputAutocapitalization(.words)
 
-                TextField("Public Key", text: $viewModel.publicKey)
-                    .textInputAutocapitalization(.never)
-                    .autocorrectionDisabled()
+                    if let validationMessage = viewModel.displayNameValidationMessage {
+                        validationText(validationMessage)
+                    }
+                }
 
-                if let errorMessage = viewModel.errorMessage {
-                    Text(errorMessage)
-                        .font(.caption)
-                        .foregroundStyle(.red)
+                Section {
+                    TextField("Public Key", text: $viewModel.publicKey)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled()
+
+                    if let validationMessage = viewModel.publicKeyValidationMessage {
+                        validationText(validationMessage)
+                    }
+                }
+
+                if viewModel.isSaving {
+                    Section {
+                        HStack {
+                            ProgressView()
+                            Text("Saving...")
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                } else if let errorMessage = viewModel.errorMessage {
+                    Section {
+                        validationText(errorMessage)
+                    }
                 }
             }
             .navigationTitle("Add Contact")
@@ -41,6 +61,12 @@ struct AddContactView: View {
                 }
             }
         }
+    }
+
+    private func validationText(_ message: String) -> some View {
+        Text(message)
+            .font(.caption)
+            .foregroundStyle(.red)
     }
 }
 

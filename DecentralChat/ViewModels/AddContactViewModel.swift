@@ -20,12 +20,44 @@ final class AddContactViewModel: ObservableObject {
     }
 
     var canSave: Bool {
-        !trimmedDisplayName.isEmpty && !trimmedPublicKey.isEmpty
+        displayNameValidationMessage == nil && publicKeyValidationMessage == nil
+    }
+
+    var trimmedDisplayName: String {
+        displayName.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    var trimmedPublicKey: String {
+        publicKey.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    var displayNameValidationMessage: String? {
+        if trimmedDisplayName.isEmpty {
+            return "Display name is required."
+        }
+
+        return nil
+    }
+
+    var publicKeyValidationMessage: String? {
+        if trimmedPublicKey.isEmpty {
+            return "Public key is required."
+        }
+
+        if trimmedPublicKey.contains(where: { $0.isWhitespace }) {
+            return "Public key cannot contain spaces."
+        }
+
+        if trimmedPublicKey.count < 6 {
+            return "Public key must be at least 6 characters."
+        }
+
+        return nil
     }
 
     func save() async -> Bool {
         guard canSave else {
-            errorMessage = "Display name and public key are required."
+            errorMessage = displayNameValidationMessage ?? publicKeyValidationMessage
             return false
         }
 
@@ -65,11 +97,4 @@ final class AddContactViewModel: ObservableObject {
         }
     }
 
-    private var trimmedDisplayName: String {
-        displayName.trimmingCharacters(in: .whitespacesAndNewlines)
-    }
-
-    private var trimmedPublicKey: String {
-        publicKey.trimmingCharacters(in: .whitespacesAndNewlines)
-    }
 }
