@@ -3,6 +3,7 @@ import SwiftUI
 
 struct ContactListView: View {
     @StateObject var viewModel = ContactListViewModel()
+    @State private var isShowingAddContact = false
 
     var body: some View {
         NavigationStack {
@@ -25,6 +26,22 @@ struct ContactListView: View {
             }
             .listStyle(.plain)
             .navigationTitle("Chats")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        isShowingAddContact = true
+                    } label: {
+                        Image(systemName: "plus")
+                    }
+                }
+            }
+            .sheet(isPresented: $isShowingAddContact, onDismiss: {
+                Task {
+                    await viewModel.loadContacts()
+                }
+            }) {
+                AddContactView()
+            }
             .task {
                 await viewModel.loadContacts()
             }
