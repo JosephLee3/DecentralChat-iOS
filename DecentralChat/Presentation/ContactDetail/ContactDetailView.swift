@@ -5,9 +5,14 @@ import UIKit
 struct ContactDetailView: View {
     @StateObject private var viewModel: ContactDetailViewModel
     @State private var didCopyPublicKey = false
+    @State private var isShowingDeleteConfirmation = false
+    @Environment(\.dismiss) private var dismiss
 
-    init(contact: Contact) {
+    private let onDeleted: (() -> Void)?
+
+    init(contact: Contact, onDeleted: (() -> Void)? = nil) {
         _viewModel = StateObject(wrappedValue: ContactDetailViewModel(contact: contact))
+        self.onDeleted = onDeleted
     }
 
     var body: some View {
@@ -43,8 +48,38 @@ struct ContactDetailView: View {
                 detailRow(title: "Created At", value: viewModel.createdAtText)
                 detailRow(title: "Updated At", value: viewModel.updatedAtText)
             }
+
+            Section {
+                Button(role: .destructive) {
+                    isShowingDeleteConfirmation = true
+                } label: {
+                    Text(viewModel.isDeleting ? "Deleting..." : "Delete Contact")
+                }
+                .disabled(!viewModel.canDelete)
+
+                if let deleteErrorMessage = viewModel.deleteErrorMessage {
+                    Text(deleteErrorMessage)
+                        .font(.caption)
+                        .foregroundStyle(.red)
+                }
+            }
         }
         .navigationTitle("Contact")
+        .alert("Delete Contact?", isPresented: $isShowingDeleteConfirmation) {
+            Button("Cancel", role: .cancel) {}
+
+            Button("Delete", role: .destructive) {
+                Task {
+                    let didDelete = await viewModel.deleteContact()
+                    if didDelete {
+                        dismiss()
+                        onDeleted?()
+                    }
+                }
+            }
+        } message: {
+            Text("This removes the contact from this device. Messages are not deleted.")
+        }
     }
 
     private var avatar: some View {

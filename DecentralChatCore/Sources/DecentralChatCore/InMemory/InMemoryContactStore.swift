@@ -18,4 +18,12 @@ public actor InMemoryContactStore: ContactStore {
     public func find(publicKey: String) async throws -> Contact? {
         contactsByPublicKey[publicKey]
     }
+
+    public func deleteContact(id: String) async throws {
+        guard let publicKey = contactsByPublicKey.first(where: { $0.value.id == id })?.key else {
+            return
+        }
+
+        contactsByPublicKey.removeValue(forKey: publicKey)
+    }
 }

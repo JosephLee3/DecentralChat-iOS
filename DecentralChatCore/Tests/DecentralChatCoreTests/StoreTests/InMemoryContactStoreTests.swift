@@ -27,6 +27,39 @@ final class InMemoryContactStoreTests: XCTestCase {
         XCTAssertEqual(contacts.map(\.displayName), ["Alice", "Bob", "Zed"])
     }
 
+    func testDeleteContactRemovesSavedContact() async throws {
+        let store = InMemoryContactStore()
+        let contact = makeContact(id: "contact-1", displayName: "Alice", publicKey: "alice-public-key")
+
+        try await store.save(contact)
+        try await store.deleteContact(id: contact.id)
+
+        let contacts = try await store.contacts()
+        XCTAssertFalse(contacts.contains(contact))
+    }
+
+    func testDeleteMissingContactDoesNotThrow() async throws {
+        let store = InMemoryContactStore()
+
+        try await store.deleteContact(id: "missing-contact")
+
+        let contacts = try await store.contacts()
+        XCTAssertTrue(contacts.isEmpty)
+    }
+
+    func testDeleteContactDoesNotRemoveOtherContacts() async throws {
+        let store = InMemoryContactStore()
+        let alice = makeContact(id: "contact-1", displayName: "Alice", publicKey: "alice-public-key")
+        let bob = makeContact(id: "contact-2", displayName: "Bob", publicKey: "bob-public-key")
+
+        try await store.save(alice)
+        try await store.save(bob)
+        try await store.deleteContact(id: alice.id)
+
+        let contacts = try await store.contacts()
+        XCTAssertEqual(contacts, [bob])
+    }
+
     private func makeContact(id: String, displayName: String, publicKey: String) -> Contact {
         Contact(
             id: id,

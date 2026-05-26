@@ -5,9 +5,16 @@ import Foundation
 @MainActor
 final class ContactDetailViewModel: ObservableObject {
     let contact: Contact
+    @Published var isDeleting: Bool
+    @Published var deleteErrorMessage: String?
 
-    init(contact: Contact) {
+    private let container: AppContainer
+
+    init(contact: Contact, container: AppContainer? = nil) {
         self.contact = contact
+        self.container = container ?? AppContainer.shared
+        self.isDeleting = false
+        self.deleteErrorMessage = nil
     }
 
     var displayName: String {
@@ -40,6 +47,30 @@ final class ContactDetailViewModel: ObservableObject {
         }
 
         return String(firstCharacter).uppercased()
+    }
+
+    var canDelete: Bool {
+        !isDeleting
+    }
+
+    func deleteContact() async -> Bool {
+        guard !isDeleting else {
+            return false
+        }
+
+        isDeleting = true
+        deleteErrorMessage = nil
+        defer {
+            isDeleting = false
+        }
+
+        do {
+            try await container.contactStore.deleteContact(id: contact.id)
+            return true
+        } catch {
+            deleteErrorMessage = error.localizedDescription
+            return false
+        }
     }
 
     private static let dateFormatter: DateFormatter = {

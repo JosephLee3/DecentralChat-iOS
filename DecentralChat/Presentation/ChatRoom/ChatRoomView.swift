@@ -4,6 +4,7 @@ import SwiftUI
 struct ChatRoomView: View {
     private let contact: Contact
     @StateObject private var viewModel: ChatRoomViewModel
+    @Environment(\.dismiss) private var dismiss
 
     init(contact: Contact) {
         self.contact = contact
@@ -57,7 +58,9 @@ struct ChatRoomView: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 NavigationLink {
-                    ContactDetailView(contact: contact)
+                    ContactDetailView(contact: contact, onDeleted: {
+                        dismiss()
+                    })
                 } label: {
                     Image(systemName: "info.circle")
                 }
