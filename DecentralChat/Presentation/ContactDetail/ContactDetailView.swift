@@ -1,8 +1,10 @@
 import SwiftUI
 import DecentralChatCore
+import UIKit
 
 struct ContactDetailView: View {
     @StateObject private var viewModel: ContactDetailViewModel
+    @State private var didCopyPublicKey = false
 
     init(contact: Contact) {
         _viewModel = StateObject(wrappedValue: ContactDetailViewModel(contact: contact))
@@ -32,6 +34,12 @@ struct ContactDetailView: View {
 
             Section("Details") {
                 detailRow(title: "Public Key", value: viewModel.publicKey, isMonospaced: true)
+
+                Button(didCopyPublicKey ? "Copied" : "Copy Public Key") {
+                    UIPasteboard.general.string = viewModel.publicKey
+                    didCopyPublicKey = true
+                }
+
                 detailRow(title: "Created At", value: viewModel.createdAtText)
                 detailRow(title: "Updated At", value: viewModel.updatedAtText)
             }
