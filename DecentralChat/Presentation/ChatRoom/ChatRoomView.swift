@@ -54,6 +54,15 @@ struct ChatRoomView: View {
         }
         .padding()
         .navigationTitle(contact.displayName)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                NavigationLink {
+                    ContactDetailView(contact: contact)
+                } label: {
+                    Image(systemName: "info.circle")
+                }
+            }
+        }
     }
 
     private var isInputEmpty: Bool {
