@@ -2,12 +2,20 @@ import DecentralChatCore
 import SwiftUI
 
 struct ChatRoomView: View {
-    private let contact: Contact
+    private let onDeleted: (() -> Void)?
+    private let onUpdated: ((Contact) -> Void)?
+    @State private var currentContact: Contact
     @StateObject private var viewModel: ChatRoomViewModel
     @Environment(\.dismiss) private var dismiss
 
-    init(contact: Contact) {
-        self.contact = contact
+    init(
+        contact: Contact,
+        onDeleted: (() -> Void)? = nil,
+        onUpdated: ((Contact) -> Void)? = nil
+    ) {
+        self.onDeleted = onDeleted
+        self.onUpdated = onUpdated
+        _currentContact = State(initialValue: contact)
         _viewModel = StateObject(wrappedValue: ChatRoomViewModel(contact: contact))
     }
 
@@ -54,13 +62,21 @@ struct ChatRoomView: View {
             }
         }
         .padding()
-        .navigationTitle(contact.displayName)
+        .navigationTitle(currentContact.displayName)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 NavigationLink {
-                    ContactDetailView(contact: contact, onDeleted: {
-                        dismiss()
-                    })
+                    ContactDetailView(
+                        contact: currentContact,
+                        onDeleted: {
+                            dismiss()
+                            onDeleted?()
+                        },
+                        onUpdated: { updatedContact in
+                            currentContact = updatedContact
+                            onUpdated?(updatedContact)
+                        }
+                    )
                 } label: {
                     Image(systemName: "info.circle")
                 }

@@ -6,13 +6,20 @@ struct ContactDetailView: View {
     @StateObject private var viewModel: ContactDetailViewModel
     @State private var didCopyPublicKey = false
     @State private var isShowingDeleteConfirmation = false
+    @State private var isShowingEditDisplayName = false
     @Environment(\.dismiss) private var dismiss
 
     private let onDeleted: (() -> Void)?
+    private let onUpdated: ((Contact) -> Void)?
 
-    init(contact: Contact, onDeleted: (() -> Void)? = nil) {
+    init(
+        contact: Contact,
+        onDeleted: (() -> Void)? = nil,
+        onUpdated: ((Contact) -> Void)? = nil
+    ) {
         _viewModel = StateObject(wrappedValue: ContactDetailViewModel(contact: contact))
         self.onDeleted = onDeleted
+        self.onUpdated = onUpdated
     }
 
     var body: some View {
@@ -65,6 +72,17 @@ struct ContactDetailView: View {
             }
         }
         .navigationTitle("Contact")
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button("Edit") {
+                    viewModel.beginEditing()
+                    isShowingEditDisplayName = true
+                }
+            }
+        }
+        .sheet(isPresented: $isShowingEditDisplayName) {
+            editDisplayNameSheet
+        }
         .alert("Delete Contact?", isPresented: $isShowingDeleteConfirmation) {
             Button("Cancel", role: .cancel) {}
 
@@ -79,6 +97,48 @@ struct ContactDetailView: View {
             }
         } message: {
             Text("This removes the contact from this device. Messages are not deleted.")
+        }
+    }
+
+    private var editDisplayNameSheet: some View {
+        NavigationStack {
+            Form {
+                Section {
+                    TextField("Display Name", text: $viewModel.editableDisplayName)
+                        .textInputAutocapitalization(.words)
+                        .disabled(viewModel.isSavingEdit)
+                }
+
+                if let editErrorMessage = viewModel.editErrorMessage {
+                    Section {
+                        Text(editErrorMessage)
+                            .font(.caption)
+                            .foregroundStyle(.red)
+                    }
+                }
+            }
+            .navigationTitle("Edit Contact")
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        isShowingEditDisplayName = false
+                    }
+                    .disabled(viewModel.isSavingEdit)
+                }
+
+                ToolbarItem(placement: .confirmationAction) {
+                    Button(viewModel.isSavingEdit ? "Saving..." : "Save") {
+                        Task {
+                            let didSave = await viewModel.saveDisplayNameEdit()
+                            if didSave {
+                                onUpdated?(viewModel.contact)
+                                isShowingEditDisplayName = false
+                            }
+                        }
+                    }
+                    .disabled(!viewModel.canSaveEdit || viewModel.isSavingEdit)
+                }
+            }
         }
     }
 

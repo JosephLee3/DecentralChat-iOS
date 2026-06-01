@@ -17,7 +17,19 @@ struct ContactListView: View {
                 } else {
                     ForEach(viewModel.chatItems) { item in
                         NavigationLink {
-                            ChatRoomView(contact: item.contact)
+                            ChatRoomView(
+                                contact: item.contact,
+                                onDeleted: {
+                                    Task {
+                                        await viewModel.loadContacts()
+                                    }
+                                },
+                                onUpdated: { _ in
+                                    Task {
+                                        await viewModel.loadContacts()
+                                    }
+                                }
+                            )
                         } label: {
                             contactRow(item)
                         }
@@ -41,9 +53,6 @@ struct ContactListView: View {
                 }
             }) {
                 AddContactView()
-            }
-            .task {
-                await viewModel.loadContacts()
             }
             .onAppear {
                 Task {
@@ -72,10 +81,10 @@ struct ContactListView: View {
 
     private var emptyStateRow: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text("No contacts yet")
+            Text("No contacts")
                 .font(.headline)
 
-            Text("Demo contact will appear automatically")
+            Text("Tap + to add a contact")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
         }
