@@ -39,6 +39,16 @@ struct ContactListView: View {
             .listStyle(.plain)
             .navigationTitle("Chats")
             .toolbar {
+#if DEBUG
+                ToolbarItem(placement: .topBarLeading) {
+                    NavigationLink {
+                        DebugToolsView()
+                    } label: {
+                        Text("Debug")
+                    }
+                }
+#endif
+
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
                         isShowingAddContact = true
@@ -149,7 +159,6 @@ struct ContactListView: View {
             .prefix(1)
             .uppercased()
     }
-
 }
 
 #Preview {

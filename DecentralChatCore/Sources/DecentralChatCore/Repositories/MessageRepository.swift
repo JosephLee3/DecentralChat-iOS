@@ -37,6 +37,34 @@ public final class MessageRepository {
 
         try await messageStore.save(message)
 
+        try await sendSavedMessage(message)
+    }
+
+    public func retrySend(messageID: String) async throws {
+        guard let message = try await messageStore.message(id: messageID) else {
+            throw StorageError.notFound
+        }
+
+        guard message.status == .failed else {
+            throw StorageError.updateFailed
+        }
+
+        let retryingMessage = ChatMessage(
+            id: message.id,
+            conversationID: message.conversationID,
+            senderPublicKey: message.senderPublicKey,
+            receiverPublicKey: message.receiverPublicKey,
+            body: message.body,
+            createdAt: message.createdAt,
+            status: .sending,
+            direction: message.direction
+        )
+
+        try await messageStore.updateStatus(message.id, .sending)
+        try await sendSavedMessage(retryingMessage)
+    }
+
+    private func sendSavedMessage(_ message: ChatMessage) async throws {
         do {
             let envelope = try cryptoService.encryptAndSign(message)
             try await transport.send(envelope)

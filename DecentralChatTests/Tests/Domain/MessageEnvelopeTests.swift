@@ -7,6 +7,7 @@
 
 import Foundation
 import XCTest
+import DecentralChatCore
 @testable import DecentralChat
 
 final class MessageEnvelopeTests: XCTestCase {

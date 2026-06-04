@@ -48,6 +48,13 @@ struct ChatRoomView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
 
+#if DEBUG
+            Toggle("Fail Sends", isOn: failSendsBinding)
+                .font(.caption)
+                .toggleStyle(.switch)
+                .frame(maxWidth: .infinity, alignment: .leading)
+#endif
+
             HStack {
                 TextField("Message", text: $viewModel.inputText)
                     .textFieldStyle(.roundedBorder)
@@ -88,6 +95,16 @@ struct ChatRoomView: View {
         viewModel.inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
+#if DEBUG
+    private var failSendsBinding: Binding<Bool> {
+        Binding {
+            AppContainer.shared.debugMockTransport.shouldFailSend
+        } set: { shouldFailSend in
+            AppContainer.shared.debugMockTransport.shouldFailSend = shouldFailSend
+        }
+    }
+#endif
+
     private func messageRow(_ message: ChatMessage) -> some View {
         HStack {
             if message.isOutgoing {
@@ -100,9 +117,22 @@ struct ChatRoomView: View {
                     .foregroundStyle(message.isOutgoing ? .white : .primary)
                     .multilineTextAlignment(message.isOutgoing ? .trailing : .leading)
 
-                Text(message.status.rawValue)
-                    .font(.caption)
-                    .foregroundStyle(message.isOutgoing ? .white.opacity(0.75) : .secondary)
+                HStack(spacing: 8) {
+                    if message.shouldShowRetry {
+                        Button("Retry") {
+                            Task {
+                                await viewModel.retry(message: message)
+                            }
+                        }
+                        .font(.caption)
+                        .buttonStyle(.bordered)
+                        .controlSize(.mini)
+                    }
+
+                    Text(message.status.rawValue)
+                        .font(.caption)
+                        .foregroundStyle(message.isOutgoing ? .white.opacity(0.75) : .secondary)
+                }
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 8)
@@ -144,5 +174,9 @@ struct ChatRoomView: View {
 private extension ChatMessage {
     var isOutgoing: Bool {
         direction == .outgoing || direction == .outbound
+    }
+
+    var shouldShowRetry: Bool {
+        isOutgoing && status == .failed
     }
 }

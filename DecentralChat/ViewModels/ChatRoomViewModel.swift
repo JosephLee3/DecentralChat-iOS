@@ -44,6 +44,19 @@ final class ChatRoomViewModel: ObservableObject {
             inputText = ""
             await reloadMessages()
         } catch {
+            await reloadMessages()
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    func retry(message: ChatMessage) async {
+        errorMessage = nil
+
+        do {
+            try await container.messageRepository.retrySend(messageID: message.id)
+            await reloadMessages()
+        } catch {
+            await reloadMessages()
             errorMessage = error.localizedDescription
         }
     }

@@ -56,6 +56,114 @@ final class MessageRepositoryTests: XCTestCase {
         XCTAssertEqual(fixture.transport.sentEnvelopes.first?.conversationID, fixture.conversationID)
     }
 
+    func testRetrySendFailedMessageSucceedsAndUpdatesStatusToSent() async throws {
+        let fixture = try await makeFixture()
+        let failedMessage = makeOutgoingMessage(
+            id: "message-1",
+            conversationID: fixture.conversationID,
+            senderPublicKey: fixture.identity.publicKey,
+            receiverPublicKey: fixture.contact.publicKey,
+            status: .failed
+        )
+        try await fixture.messageStore.save(failedMessage)
+
+        try await fixture.repository.retrySend(messageID: failedMessage.id)
+
+        let retriedMessage = try await fixture.messageStore.message(id: failedMessage.id)
+        XCTAssertEqual(retriedMessage?.id, failedMessage.id)
+        XCTAssertEqual(retriedMessage?.body, failedMessage.body)
+        XCTAssertEqual(retriedMessage?.createdAt, failedMessage.createdAt)
+        XCTAssertEqual(retriedMessage?.status, .sent)
+        XCTAssertEqual(fixture.transport.sentEnvelopes.count, 1)
+        XCTAssertEqual(fixture.transport.sentEnvelopes.first?.id, failedMessage.id)
+    }
+
+    func testRetrySendFailureUpdatesStatusBackToFailedAndThrows() async throws {
+        let fixture = try await makeFixture()
+        let failedMessage = makeOutgoingMessage(
+            id: "message-1",
+            conversationID: fixture.conversationID,
+            senderPublicKey: fixture.identity.publicKey,
+            receiverPublicKey: fixture.contact.publicKey,
+            status: .failed
+        )
+        try await fixture.messageStore.save(failedMessage)
+        fixture.transport.shouldFailSend = true
+
+        do {
+            try await fixture.repository.retrySend(messageID: failedMessage.id)
+            XCTFail("Expected TransportError.sendFailed")
+        } catch let error as TransportError {
+            XCTAssertEqual(error, .sendFailed)
+        }
+
+        let retriedMessage = try await fixture.messageStore.message(id: failedMessage.id)
+        XCTAssertEqual(retriedMessage?.status, .failed)
+    }
+
+    func testRetrySendMissingMessageThrowsNotFound() async throws {
+        let fixture = try await makeFixture()
+
+        do {
+            try await fixture.repository.retrySend(messageID: "missing-message")
+            XCTFail("Expected StorageError.notFound")
+        } catch StorageError.notFound {
+            // Expected.
+        } catch {
+            XCTFail("Expected StorageError.notFound, got \(error)")
+        }
+    }
+
+    func testRetrySendSentMessageIsRejectedAndStatusRemainsUnchanged() async throws {
+        let fixture = try await makeFixture()
+        let sentMessage = makeOutgoingMessage(
+            id: "message-1",
+            conversationID: fixture.conversationID,
+            senderPublicKey: fixture.identity.publicKey,
+            receiverPublicKey: fixture.contact.publicKey,
+            status: .sent
+        )
+        try await fixture.messageStore.save(sentMessage)
+
+        do {
+            try await fixture.repository.retrySend(messageID: sentMessage.id)
+            XCTFail("Expected StorageError.updateFailed")
+        } catch StorageError.updateFailed {
+            // Expected.
+        } catch {
+            XCTFail("Expected StorageError.updateFailed, got \(error)")
+        }
+
+        let loadedMessage = try await fixture.messageStore.message(id: sentMessage.id)
+        XCTAssertEqual(loadedMessage?.status, .sent)
+        XCTAssertTrue(fixture.transport.sentEnvelopes.isEmpty)
+    }
+
+    func testRetrySendSendingMessageIsRejectedAndStatusRemainsUnchanged() async throws {
+        let fixture = try await makeFixture()
+        let sendingMessage = makeOutgoingMessage(
+            id: "message-1",
+            conversationID: fixture.conversationID,
+            senderPublicKey: fixture.identity.publicKey,
+            receiverPublicKey: fixture.contact.publicKey,
+            status: .sending
+        )
+        try await fixture.messageStore.save(sendingMessage)
+
+        do {
+            try await fixture.repository.retrySend(messageID: sendingMessage.id)
+            XCTFail("Expected StorageError.updateFailed")
+        } catch StorageError.updateFailed {
+            // Expected.
+        } catch {
+            XCTFail("Expected StorageError.updateFailed, got \(error)")
+        }
+
+        let loadedMessage = try await fixture.messageStore.message(id: sendingMessage.id)
+        XCTAssertEqual(loadedMessage?.status, .sending)
+        XCTAssertTrue(fixture.transport.sentEnvelopes.isEmpty)
+    }
+
     func testObserveIncomingMessagesSavesIncomingMessage() async throws {
         let fixture = try await makeFixture()
         let incomingMessage = makeIncomingMessage(id: "incoming-1", conversationID: fixture.conversationID)
@@ -170,6 +278,25 @@ final class MessageRepositoryTests: XCTestCase {
             body: "Incoming body",
             createdAt: Date(timeIntervalSince1970: 300),
             status: .sent,
+            direction: .outgoing
+        )
+    }
+
+    private func makeOutgoingMessage(
+        id: String,
+        conversationID: String,
+        senderPublicKey: String,
+        receiverPublicKey: String,
+        status: MessageStatus
+    ) -> ChatMessage {
+        ChatMessage(
+            id: id,
+            conversationID: conversationID,
+            senderPublicKey: senderPublicKey,
+            receiverPublicKey: receiverPublicKey,
+            body: "Retry body",
+            createdAt: Date(timeIntervalSince1970: 400),
+            status: status,
             direction: .outgoing
         )
     }

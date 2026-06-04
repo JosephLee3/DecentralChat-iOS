@@ -6,6 +6,7 @@
 //
 
 import XCTest
+import DecentralChatCore
 @testable import DecentralChat
 
 final class ConversationIDFactoryTests: XCTestCase {

@@ -30,7 +30,10 @@ final class ContactListViewModel: ObservableObject {
         }
 
         do {
+#if DEBUG
+            // Development-only seed data. Release builds should show the true empty state.
             try await ensureDemoContact()
+#endif
             let loadedContacts = try await container.contactStore.contacts()
             contacts = loadedContacts
             chatItems = try await makeChatItems(for: loadedContacts)
