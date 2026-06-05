@@ -14,7 +14,10 @@ enum AppTransportFactory {
         case relayWebSocketNotImplemented
     }
 
-    static func makeTransport(configuration: TransportConfiguration = .mock) throws -> Result {
+    static func makeTransport(
+        configuration: TransportConfiguration = .mock,
+        relayTaskFactory: WebSocketTaskFactoryProtocol? = nil
+    ) throws -> Result {
         switch configuration.mode {
         case .mock:
             return makeMockTransport()
@@ -23,9 +26,19 @@ enum AppTransportFactory {
                 throw FactoryError.invalidRelayConfiguration
             }
 
-            // TODO: Build RelayWebSocketTransport with URLSessionWebSocketSession
-            // and URLSessionWebSocketTaskAdapter once runtime relay mode is enabled.
-            throw FactoryError.relayWebSocketNotImplemented
+            guard let relayURL = configuration.relayURL, let relayTaskFactory else {
+                throw FactoryError.relayWebSocketNotImplemented
+            }
+
+            let task = relayTaskFactory.makeTask(url: relayURL)
+            let session = URLSessionWebSocketSession(task: task)
+            let transport = RelayWebSocketTransport(session: session)
+
+#if DEBUG
+            return Result(transport: transport, debugMockTransport: nil)
+#else
+            return Result(transport: transport)
+#endif
         }
     }
 

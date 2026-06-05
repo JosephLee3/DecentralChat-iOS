@@ -2,8 +2,14 @@ import DecentralChatCore
 import SwiftUI
 
 struct ContactListView: View {
-    @StateObject var viewModel = ContactListViewModel()
+    let container: AppContainer
+    @StateObject private var viewModel: ContactListViewModel
     @State private var isShowingAddContact = false
+
+    init(container: AppContainer = .shared) {
+        self.container = container
+        _viewModel = StateObject(wrappedValue: ContactListViewModel(container: container))
+    }
 
     var body: some View {
         NavigationStack {

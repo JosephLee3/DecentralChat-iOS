@@ -68,6 +68,30 @@ final class AppTransportFactoryTests: XCTestCase {
         }
     }
 
+    func testRelayConfigurationWithWSSURLAndFakeTaskFactoryBuildsRelayTransport() throws {
+        let relayURL = try XCTUnwrap(URL(string: "wss://relay.example.com/chat"))
+        let configuration = TransportConfiguration(
+            mode: .relayWebSocket,
+            relayURL: relayURL,
+            connectionTimeoutSeconds: 30
+        )
+        let task = FakeAppTransportFactoryWebSocketTask()
+        let factory = FakeAppTransportFactoryWebSocketTaskFactory(task: task)
+
+        let result = try AppTransportFactory.makeTransport(
+            configuration: configuration,
+            relayTaskFactory: factory
+        )
+
+        XCTAssertTrue(result.transport is RelayWebSocketTransport)
+        XCTAssertFalse(result.transport is MockTransport)
+        XCTAssertEqual(factory.requestedURLs, [relayURL])
+
+#if DEBUG
+        XCTAssertNil(result.debugMockTransport)
+#endif
+    }
+
     func testAppContainerDefaultBehaviorUsesMockTransport() {
         let container = try! AppContainer()
 
@@ -99,4 +123,34 @@ final class AppTransportFactoryTests: XCTestCase {
             )
         }
     }
+}
+
+private final class FakeAppTransportFactoryWebSocketTaskFactory: WebSocketTaskFactoryProtocol, @unchecked Sendable {
+    private let task: WebSocketTaskProtocol
+    private(set) var requestedURLs: [URL] = []
+
+    init(task: WebSocketTaskProtocol) {
+        self.task = task
+    }
+
+    func makeTask(url: URL) -> WebSocketTaskProtocol {
+        requestedURLs.append(url)
+        return task
+    }
+}
+
+private final class FakeAppTransportFactoryWebSocketTask: WebSocketTaskProtocol, @unchecked Sendable {
+    func resume() {}
+
+    func cancel() {}
+
+    func sendString(_ text: String) async throws {}
+
+    func receiveString() async throws -> String {
+        throw FakeAppTransportFactoryWebSocketTaskError.noIncomingString
+    }
+}
+
+private enum FakeAppTransportFactoryWebSocketTaskError: Error {
+    case noIncomingString
 }
